@@ -23,7 +23,7 @@ You can go to that directory with a full new project, edit files and test things
 ```console
 $ cd ./dev-fsfp/
 
-$ docker-compose up -d
+$ docker compose up -d
 ```
 
 It is outside of the project generator directory to let you add Git to it and compare versions and changes.
