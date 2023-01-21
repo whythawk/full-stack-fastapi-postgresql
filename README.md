@@ -143,16 +143,16 @@ The input variables, with their default values (some auto generated) are:
 
 Once the Cookiecutter script has completed, you will have a folder populated with the base project and all input variables customised. 
 
-Change into the project folder and run the `docker-compose` script to build the project containers:
+Change into the project folder and run the `docker compose` script to build the project containers:
 
 ```bash
-docker-compose build --no-cache
+docker compose build --no-cache
 ```
 
 And start them:
 
 ```bash
-docker-compose up -d 
+docker compose up -d 
 ```
 
 **NOTE:** I find that the **Nuxt** container does not run well in development mode, and does not refresh on changes. In particular, `nuxt/content` is very unpredictable in dev mode running in the container. It is far better to run the `frontend` outside of the container to take advantage of live refresh.
@@ -175,7 +175,7 @@ FastAPI `backend` updates will refresh automatically, but the `celeryworker` con
 If you like to do algorithmic development and testing in Jupyter Notebooks, then launch the `backend` terminal and start Jupyter as follows:
 
 ```bash
-docker-compose exec backend bash
+docker compose exec backend bash
 ```
 
 From the terminal:
