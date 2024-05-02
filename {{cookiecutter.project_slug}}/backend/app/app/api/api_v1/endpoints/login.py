@@ -1,4 +1,4 @@
-from typing import Any, Union, Dict
+from typing import Annotated, Any, Union
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
@@ -24,7 +24,7 @@ Specifies minimum criteria:
         - The user ID or password was incorrect.
         - The account does not exist.
         - The account is locked or disabled.
-    - Code should go through the same process, no matter what, allowing the application to return in approximately 
+    - Code should go through the same process, no matter what, allowing the application to return in approximately
       the same response time.
     - In the words of George Orwell, break these rules sooner than do something truly barbaric.
 
@@ -33,7 +33,7 @@ See `security.py` for other requirements.
 
 
 @router.post("/magic/{email}", response_model=schemas.WebToken)
-def login_with_magic_link(*, db: Session = Depends(deps.get_db), email: str) -> Any:
+def login_with_magic_link(*, db: Annotated[Session, Depends(deps.get_db)], email: str) -> Any:
     """
     First step of a 'magic link' login. Check if the user exists and generate a magic link. Generates two short-duration
     jwt tokens, one for validation, one for email. Creates user if not exist.
@@ -46,7 +46,7 @@ def login_with_magic_link(*, db: Session = Depends(deps.get_db), email: str) -> 
         # Still permits a timed-attack, but does create ambiguity.
         raise HTTPException(status_code=400, detail="A link to activate your account has been emailed.")
     tokens = security.create_magic_tokens(subject=user.id)
-    if settings.EMAILS_ENABLED and user.email:
+    if settings.emails_enabled and user.email:
         # Send email with user.email as subject
         send_magic_login_email(email_to=user.email, token=tokens[0])
     return {"claim": tokens[1]}
@@ -55,9 +55,9 @@ def login_with_magic_link(*, db: Session = Depends(deps.get_db), email: str) -> 
 @router.post("/claim", response_model=schemas.Token)
 def validate_magic_link(
     *,
-    db: Session = Depends(deps.get_db),
+    db: Annotated[Session, Depends(deps.get_db)],
     obj_in: schemas.WebToken,
-    magic_in: bool = Depends(deps.get_magic_token),
+    magic_in: Annotated[bool, Depends(deps.get_magic_token)],
 ) -> Any:
     """
     Second step of a 'magic link' login.
@@ -92,7 +92,9 @@ def validate_magic_link(
 
 
 @router.post("/oauth", response_model=schemas.Token)
-def login_with_oauth2(db: Session = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()) -> Any:
+def login_with_oauth2(
+    db: Annotated[Session, Depends(deps.get_db)], form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+) -> Any:
     """
     First step with OAuth2 compatible token login, get an access token for future requests.
     """
@@ -117,9 +119,9 @@ def login_with_oauth2(db: Session = Depends(deps.get_db), form_data: OAuth2Passw
 @router.post("/totp", response_model=schemas.Token)
 def login_with_totp(
     *,
-    db: Session = Depends(deps.get_db),
+    db: Annotated[Session, Depends(deps.get_db)],
     totp_data: schemas.WebToken,
-    current_user: models.User = Depends(deps.get_totp_user),
+    current_user: Annotated[models.User, Depends(deps.get_totp_user)],
 ) -> Any:
     """
     Final validation step, using TOTP.
@@ -143,9 +145,9 @@ def login_with_totp(
 @router.put("/totp", response_model=schemas.Msg)
 def enable_totp_authentication(
     *,
-    db: Session = Depends(deps.get_db),
+    db: Annotated[Session, Depends(deps.get_db)],
     data_in: schemas.EnableTOTP,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: Annotated[models.User, Depends(deps.get_current_active_user)],
 ) -> Any:
     """
     For validation of token before enabling TOTP.
@@ -169,9 +171,9 @@ def enable_totp_authentication(
 @router.delete("/totp", response_model=schemas.Msg)
 def disable_totp_authentication(
     *,
-    db: Session = Depends(deps.get_db),
+    db: Annotated[Session, Depends(deps.get_db)],
     data_in: schemas.UserUpdate,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: Annotated[models.User, Depends(deps.get_current_active_user)],
 ) -> Any:
     """
     Disable TOTP.
@@ -186,8 +188,8 @@ def disable_totp_authentication(
 
 @router.post("/refresh", response_model=schemas.Token)
 def refresh_token(
-    db: Session = Depends(deps.get_db),
-    current_user: models.User = Depends(deps.get_refresh_user),
+    db: Annotated[Session, Depends(deps.get_db)],
+    current_user: Annotated[models.User, Depends(deps.get_refresh_user)],
 ) -> Any:
     """
     Refresh tokens for future requests
@@ -203,8 +205,8 @@ def refresh_token(
 
 @router.post("/revoke", response_model=schemas.Msg)
 def revoke_token(
-    db: Session = Depends(deps.get_db),
-    current_user: models.User = Depends(deps.get_refresh_user),
+    db: Annotated[Session, Depends(deps.get_db)],
+    current_user: Annotated[models.User, Depends(deps.get_refresh_user)],
 ) -> Any:
     """
     Revoke a refresh token
@@ -213,14 +215,14 @@ def revoke_token(
 
 
 @router.post("/recover/{email}", response_model=Union[schemas.WebToken, schemas.Msg])
-def recover_password(email: str, db: Session = Depends(deps.get_db)) -> Any:
+def recover_password(email: str, db: Annotated[Session, Depends(deps.get_db)]) -> Any:
     """
     Password Recovery
     """
     user = crud.user.get_by_email(db, email=email)
     if user and crud.user.is_active(user):
         tokens = security.create_magic_tokens(subject=user.id)
-        if settings.EMAILS_ENABLED:
+        if settings.emails_enabled:
             send_reset_password_email(email_to=user.email, email=email, token=tokens[0])
             return {"claim": tokens[1]}
     return {"msg": "If that login exists, we'll send you an email to reset your password."}
@@ -229,10 +231,10 @@ def recover_password(email: str, db: Session = Depends(deps.get_db)) -> Any:
 @router.post("/reset", response_model=schemas.Msg)
 def reset_password(
     *,
-    db: Session = Depends(deps.get_db),
+    db: Annotated[Session, Depends(deps.get_db)],
     new_password: str = Body(...),
     claim: str = Body(...),
-    magic_in: bool = Depends(deps.get_magic_token),
+    magic_in: Annotated[bool, Depends(deps.get_magic_token)],
 ) -> Any:
     """
     Reset password

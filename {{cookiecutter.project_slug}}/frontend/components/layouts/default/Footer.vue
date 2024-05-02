@@ -3,7 +3,7 @@
       <div class="mx-auto max-w-md overflow-hidden py-12 px-4 sm:max-w-3xl sm:px-6 lg:max-w-7xl lg:px-8">
         <nav class="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
           <div v-for="item in footerNavigation.main" :key="item.name" class="px-5 py-2">
-            <LocaleLink :to="item.to" class="text-base text-gray-400 hover:text-gray-300">{{ t(item.name) }}</LocaleLink>
+            <NuxtLinkLocale :to="item.to" class="text-base text-gray-400 hover:text-gray-300">{{ t(item.name) }}</NuxtLinkLocale>
           </div>
         </nav>
         <div class="mt-8 flex justify-center space-x-6">
@@ -13,7 +13,7 @@
           </a>
         </div>
         <div class="flex justify-between">
-          <p class="mt-8 text-center text-base text-gray-400">&copy; 2022 {{ t(siteName) }}. {{ t("footer.rights") }}</p>
+          <p class="mt-8 text-center text-base text-gray-400">&copy; 2024 {{ t(siteName) }}. {{ t("footer.rights") }}</p>
           <LocaleDropdown />
         </div>
       </div>

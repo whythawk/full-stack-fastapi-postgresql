@@ -1,21 +1,22 @@
 from __future__ import annotations
 from fastapi import WebSocket
-from starlette.websockets import WebSocketDisconnect
-from websockets.exceptions import ConnectionClosedError
+from starlette.websockets import WebSocketDisconnect, WebSocketException
+
+# from websockets.exceptions import ConnectionClosedError
 
 
 async def send_response(*, websocket: WebSocket, response: dict):
     try:
         await websocket.send_json(response)
         return True
-    except (WebSocketDisconnect, ConnectionClosedError):
+    except (WebSocketDisconnect, WebSocketException):
         return False
 
 
 async def receive_request(*, websocket: WebSocket) -> dict:
     try:
         return await websocket.receive_json()
-    except (WebSocketDisconnect, ConnectionClosedError):
+    except (WebSocketDisconnect, WebSocketException):
         return {}
 
 

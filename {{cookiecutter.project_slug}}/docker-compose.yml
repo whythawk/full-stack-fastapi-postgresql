@@ -1,7 +1,6 @@
-version: "3.3"
 services:
   proxy:
-    image: traefik:v2.2
+    image: traefik:v2.3
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
@@ -81,12 +80,10 @@ services:
           - node.labels.${STACK_NAME?Variable not set}.app-db-data == true
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:7.6
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
-    depends_on:
-      - db
     env_file:
       - .env
     deploy:
@@ -199,9 +196,6 @@ services:
 
   backend:
     image: "${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}"
-    depends_on:
-      - db
-      - neo4j
     volumes:
       - app-neo4j-import:/app/imports
     logging:
@@ -234,10 +228,6 @@ services:
 
   celeryworker:
     image: "${DOCKER_IMAGE_CELERYWORKER?Variable not set}:${TAG-latest}"
-    depends_on:
-      - db
-      - neo4j
-      - queue
     volumes:
       - app-neo4j-import:/app/imports
     logging:

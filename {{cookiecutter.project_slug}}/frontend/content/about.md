@@ -8,7 +8,7 @@ navigation: false
 
 Accelerate your next web development project with this FastAPI/Nuxt.js base project generator.
 
-This project is a comprehensively updated fork of [Sebastián Ramírez's](https://github.com/tiangolo) [Full Stack FastAPI and PostgreSQL Base Project Generator](https://github.com/tiangolo/full-stack-fastapi-postgresql). FastAPI is updated to version 0.88 (November 2022), SQLAlchemy to version 1.4.45 (December 2022), and the frontend to Nuxt 3 (November 2022).
+This project is a fork of [Sebastián Ramírez's](https://github.com/tiangolo) [Full Stack FastAPI and PostgreSQL Base Project Generator](https://github.com/tiangolo/full-stack-fastapi-postgresql). FastAPI is updated to version 0.109 (April 2024), SQLAlchemy to version 2.0.29 (March 2024), and the frontend to Nuxt 3.11 (April 2024).
 
 ---
 
@@ -17,6 +17,7 @@ This project is a comprehensively updated fork of [Sebastián Ramírez's](https:
   - [Generate passwords](#generate-passwords)
   - [Input variables](#input-variables)
 - [How to deploy](#how-to-deploy)
+- [Fork differences](#fork-differences)
 - [More details](#more-details)
 - [Licence](#licence)
 
@@ -25,15 +26,16 @@ This project is a comprehensively updated fork of [Sebastián Ramírez's](https:
 ## Key features
 
 - **Docker Compose** integration and optimization for local development.
-- [**FastAPI**](https://github.com/tiangolo/fastapi) backend with [Inboard](https://inboard.bws.bio/) one-repo Docker images:
+- [**FastAPI**](https://github.com/tiangolo/fastapi) backend with [Inboard](https://inboard.bws.bio/) one-repo Docker images, using Python 3.11:
   - **Authentication** user management schemas, models, crud and apis already built, with OAuth2 JWT token support & default hashing.
-  - **SQLAlchemy** version 1.4 support for models.
-  - **MJML** templates for common email transactions.
+  - **SQLAlchemy** version 2.0 support for models.
+  - **Pydantic** version 2.7 for schemas.
   - **Metadata Schema** based on [Dublin Core](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-3) for inheritance.
   - **Common CRUD** support via generic inheritance.
   - **Standards-based**: Based on (and fully compatible with) the open standards for APIs: [OpenAPI](https://github.com/OAI/OpenAPI-Specification) and [JSON Schema](http://json-schema.org/).
+  - **MJML** templates for common email transactions.
   - [**Many other features**]("https://fastapi.tiangolo.com/features/"): including automatic validation, serialization, interactive documentation, etc.
-- [**Nuxt/Vue 3**](https://nuxt.com/) frontend:
+- [**Nuxt/Vue 3**](https://nuxt.com/) frontend using TypeScript:
   - **Authentication** with JWT and cookie management, including `access` and `refresh` tokens,
   - **Authorisation** via middleware for page access, including logged in or superuser.
   - **Model blog** project, with [Nuxt Content](https://content.nuxtjs.org/) for writing Markdown pages.
@@ -47,7 +49,6 @@ This project is a comprehensively updated fork of [Sebastián Ramírez's](https:
 - **Neo4j** graph database, including integration into the FastAPI base project.
 - Load balancing between frontend and backend with **Traefik**, so you can have both under the same domain, separated by path, but served by different containers.
 - Traefik integration, including Let's Encrypt **HTTPS** certificates automatic generation.
-- GitLab **CI** (continuous integration), including frontend and backend testing.
 
 ## How to use it
 
@@ -122,9 +123,26 @@ This stack can be adjusted and used with several deployment options that are com
 
 Please refer to <a href="https://dockerswarm.rocks" target="_blank">DockerSwarm.rocks</a> to see how to deploy such a cluster in 20 minutes.
 
+## Fork differences
+
+The original objective of this fork was to maintain parity with the [Full Stack FastAPI and PostgreSQL Base Project Generator](https://github.com/tiangolo/full-stack-fastapi-postgresql) but update it to bring it up to current stack versions, fixes, and with a complete auth 'n auth system.
+
+With the most recent updates to the base stack, Sebastián has made some fairly dramatic changes and these two stacks are no longer compatible. This table presents a summary of the major differences:
+
+| This base stack                  | Tiangolo base stack     |
+| :------------------------------- | :---------------------- |
+| SQLAlchemy & Pydantic            | SqlModel                |
+| Postgresql 15 & PGAdmin          | Postgresql 12 & Adminer |
+| Celery & RabbitMQ task queue     | -                       |
+| NuxtJS frontend                  | React frontend          |
+
+I use this stack to produce some fairly complex web-based applications and I need to get to the full APIs for SQLAlchemy and Pydantic, and SqlModel doesn't offer me that. I also need to run distributed asyncronous tasks, so Celery is important. Finally, I prefer Nuxt.
+
+This stack also has a much more sophisticated and feature-complete auth 'n auth system which is a requirement for any web app.
+
 ## More details
 
-After using this generator, your new project (the directory created) will contain an extensive `README.md` with instructions for development, deployment, etc. You can pre-read [the project `README.md` template here too](./{{cookiecutter.project_slug}}/README.md).
+After using this generator, your new project (the directory created) will contain an extensive `README.md` with instructions for development, deployment, etc. You can pre-read [the project `README.md` template here too](./base-project/README.md).
 
 ## Licence
 

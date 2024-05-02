@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { apiAuth } from "@/api"
 import { useTokenStore, useToastStore } from "@/stores"
-import { IUserProfileUpdate } from "@/interfaces"
+import type { IUserProfileUpdate } from "@/interfaces"
 
 const token = useTokenStore()
 const toast = useToastStore()

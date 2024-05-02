@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { apiAuth } from "@/api"
 import { useTokenStore } from "@/stores"
-import { IUserProfile } from "@/interfaces"
+import type { IUserProfile } from "@/interfaces"
 
 const token = useTokenStore()
 

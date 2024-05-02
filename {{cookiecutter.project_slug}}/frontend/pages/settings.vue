@@ -23,7 +23,7 @@
             <button 
               v-if="authStore.is_superuser"
               class="text-gray-900 hover:text-gray-900 group rounded-md px-3 py-2 flex items-center text-sm font-medium cursor-pointer"
-              @click.prevent="navigateTo('/moderation')"
+              @click.prevent="navigateToModeration"
             >
               <component 
                 :is="UsersIcon" 
@@ -55,6 +55,7 @@ definePageMeta({
   middleware: ["authenticated"],
 });
 
+const localePath = useLocalePath()
 const authStore = useAuthStore()
 
 const navigation = [
@@ -64,6 +65,10 @@ const navigation = [
 const title = "Settings"
 const description = "Update your personal settings, or delete your account."
 const selected = ref("ACCOUNT")
+
+async function navigateToModeration() {
+  return await navigateTo(localePath("/moderation"))
+}
 
 function changeSelection(selection: string) {
   selected.value = selection

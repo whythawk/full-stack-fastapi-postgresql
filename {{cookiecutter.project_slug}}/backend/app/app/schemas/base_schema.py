@@ -1,6 +1,6 @@
 from __future__ import annotations
-from pydantic import BaseModel, Field, validator, constr
-from typing import Optional, List
+from pydantic import ConfigDict, BaseModel, Field
+from typing import Optional
 from uuid import UUID
 from datetime import date, datetime
 import json
@@ -11,10 +11,10 @@ from app.schema_types import BaseEnum
 class BaseSchema(BaseModel):
     @property
     def as_db_dict(self):
-        to_db = self.dict(exclude_defaults=True, exclude_none=True, exclude={"identifier, id"})
+        to_db = self.model_dump(exclude_defaults=True, exclude_none=True, exclude={"identifier, id"})
         for key in ["id", "identifier"]:
-            if key in self.dict().keys():
-                to_db[key] = self.dict()[key].hex
+            if key in self.model_dump().keys():
+                to_db[key] = self.model_dump()[key].hex
         return to_db
 
     @property
@@ -40,7 +40,8 @@ class MetadataBaseSchema(BaseSchema):
     # https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-3
     title: Optional[str] = Field(None, description="A human-readable title given to the resource.")
     description: Optional[str] = Field(
-        None, description="A short description of the resource.",
+        None,
+        description="A short description of the resource.",
     )
     isActive: Optional[bool] = Field(default=True, description="Whether the resource is still actively maintained.")
     isPrivate: Optional[bool] = Field(
@@ -64,8 +65,4 @@ class MetadataBaseInDBBase(MetadataBaseSchema):
     isPrivate: bool = Field(
         ..., description="Whether the resource is private to team members with appropriate authorisation."
     )
-
-    class Config:
-        # https://github.com/samuelcolvin/pydantic/issues/1334#issuecomment-745434257
-        # Call PydanticModel.from_orm(dbQuery)
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

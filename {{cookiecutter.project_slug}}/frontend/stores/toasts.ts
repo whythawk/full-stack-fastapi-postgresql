@@ -1,4 +1,4 @@
-import { INotification } from "@/interfaces"
+import type {  INotification } from "@/interfaces"
 import { generateUUID } from "@/utilities"
 
 export const useToastStore = defineStore("toasts", {

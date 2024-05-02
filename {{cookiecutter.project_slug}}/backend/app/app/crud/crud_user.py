@@ -2,7 +2,7 @@ from typing import Any, Dict, Optional, Union
 
 from sqlalchemy.orm import Session
 
-from app.core.security import get_password_hash, verify_password, create_new_totp
+from app.core.security import get_password_hash, verify_password
 from app.crud.base import CRUDBase
 from app.models.user import User
 from app.schemas.user import UserCreate, UserInDB, UserUpdate
@@ -29,7 +29,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         if isinstance(obj_in, dict):
             update_data = obj_in
         else:
-            update_data = obj_in.dict(exclude_unset=True)
+            update_data = obj_in.model_dump(exclude_unset=True)
         if update_data.get("password"):
             hashed_password = get_password_hash(update_data["password"])
             del update_data["password"]
@@ -47,26 +47,26 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         return user
 
     def validate_email(self, db: Session, *, db_obj: User) -> User:
-        obj_in = UserUpdate(**UserInDB.from_orm(db_obj).dict())
+        obj_in = UserUpdate(**UserInDB.model_validate(db_obj).model_dump())
         obj_in.email_validated = True
         return self.update(db=db, db_obj=db_obj, obj_in=obj_in)
 
     def activate_totp(self, db: Session, *, db_obj: User, totp_in: NewTOTP) -> User:
-        obj_in = UserUpdate(**UserInDB.from_orm(db_obj).dict())
-        obj_in = obj_in.dict(exclude_unset=True)
+        obj_in = UserUpdate(**UserInDB.model_validate(db_obj).model_dump())
+        obj_in = obj_in.model_dump(exclude_unset=True)
         obj_in["totp_secret"] = totp_in.secret
         return self.update(db=db, db_obj=db_obj, obj_in=obj_in)
 
     def deactivate_totp(self, db: Session, *, db_obj: User) -> User:
-        obj_in = UserUpdate(**UserInDB.from_orm(db_obj).dict())
-        obj_in = obj_in.dict(exclude_unset=True)
+        obj_in = UserUpdate(**UserInDB.model_validate(db_obj).model_dump())
+        obj_in = obj_in.model_dump(exclude_unset=True)
         obj_in["totp_secret"] = None
         obj_in["totp_counter"] = None
         return self.update(db=db, db_obj=db_obj, obj_in=obj_in)
 
     def update_totp_counter(self, db: Session, *, db_obj: User, new_counter: int) -> User:
-        obj_in = UserUpdate(**UserInDB.from_orm(db_obj).dict())
-        obj_in = obj_in.dict(exclude_unset=True)
+        obj_in = UserUpdate(**UserInDB.model_validate(db_obj).model_dump())
+        obj_in = obj_in.model_dump(exclude_unset=True)
         obj_in["totp_counter"] = new_counter
         return self.update(db=db, db_obj=db_obj, obj_in=obj_in)
 
@@ -80,7 +80,7 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         if user.hashed_password:
             return True
         return False
-    
+
     def is_active(self, user: User) -> bool:
         return user.is_active
 

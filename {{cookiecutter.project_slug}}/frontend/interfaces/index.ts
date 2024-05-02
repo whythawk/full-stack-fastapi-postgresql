@@ -1,11 +1,11 @@
-import {
+import type {
   IUserProfile,
   IUserProfileUpdate,
   IUserProfileCreate,
   IUserOpenProfileCreate
 } from "./profile"
 
-import {
+import type {
   ITokenResponse,
   IWebToken,
   INewTOTP,
@@ -20,7 +20,7 @@ interface IKeyable {
   [key: string]: any | any[]
 }
   
-export {
+export type {
   IKeyable,
   IUserProfile,
   IUserProfileUpdate,

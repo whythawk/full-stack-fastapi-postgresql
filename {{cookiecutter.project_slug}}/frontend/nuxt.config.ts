@@ -41,12 +41,12 @@ export default defineNuxtConfig({
       "@nuxtjs/robots",
       "@vite-pwa/nuxt",
     ],
-    pinia: {
-      autoImports: [
-        "definePiniaStore",
-        "defineStore",
-      ],
-    },
+    // pinia: {
+    //   autoImports: [
+    //     "definePiniaStore",
+    //     "defineStore",
+    //   ],
+    // },
     piniaPersistedstate: {
       cookieOptions: {
         path: "/",
@@ -143,7 +143,7 @@ export default defineNuxtConfig({
         installPrompt: true,
       },
       devOptions: {
-        envabled: true,
+        enabled: true,
         suppressWarnings: true,
         navigateFallbackAllowlist: [/^\/$/],
         type: "module",

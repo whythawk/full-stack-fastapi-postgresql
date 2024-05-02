@@ -3,7 +3,6 @@ import logging
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 from sqlalchemy.sql import text
 
-from app.gdb import NeomodelConfig
 from app.db.session import SessionLocal
 
 logging.basicConfig(level=logging.INFO)
@@ -31,7 +30,6 @@ def init() -> None:
 
 def main() -> None:
     logger.info("Initializing service")
-    NeomodelConfig().ready()
     init()
     logger.info("Service finished initializing")
 

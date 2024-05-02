@@ -2,12 +2,12 @@
     <!-- Profile dropdown -->
     <Menu as="div" class="relative ml-3">
     <div v-if="!authStore.loggedIn">
-        <LocaleLink 
+        <NuxtLinkLocale 
             to="/login"
             class="rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2"
         >
-            <ArrowLeftOnRectangleIcon class="block h-6 w-6" />
-        </LocaleLink>
+            <ArrowLeftEndOnRectangleIcon class="block h-6 w-6" />
+        </NuxtLinkLocale>
     </div>
     <div v-else>
         <MenuButton class="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2">
@@ -22,11 +22,11 @@
             :key="`nav-${i}`" 
             v-slot="{ active }"
         >
-            <LocaleLink 
+            <NuxtLinkLocale 
                 :to="nav.to" 
                 :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']"
             >{{  nav.name }}
-            </LocaleLink>
+            </NuxtLinkLocale>
         </MenuItem>
         <MenuItem v-slot="{ active }">
             <a
@@ -44,7 +44,7 @@
   
 <script setup lang="ts">
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue"
-import { ArrowLeftOnRectangleIcon } from "@heroicons/vue/24/outline"
+import { ArrowLeftEndOnRectangleIcon } from "@heroicons/vue/24/outline"
 import { useAuthStore } from "@/stores"
 
 const authStore = useAuthStore()

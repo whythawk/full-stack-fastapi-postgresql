@@ -1,10 +1,16 @@
 import secrets
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, List, Optional
+from typing_extensions import Self
 
-from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator
+from pydantic import field_validator, AnyHttpUrl, EmailStr, HttpUrl, PostgresDsn, computed_field, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_core import MultiHostUrl
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env", env_ignore_empty=True, extra="ignore"
+    )
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     TOTP_SECRET_KEY: str = secrets.token_urlsafe(32)
@@ -21,8 +27,9 @@ class Settings(BaseSettings):
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
-    @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v: Any) -> list[str] | str:
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, (list, str)):
@@ -31,12 +38,6 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str
     SENTRY_DSN: Optional[HttpUrl] = None
-
-    @validator("SENTRY_DSN", pre=True)
-    def sentry_dsn_can_be_blank(cls, v: str) -> Optional[str]:
-        if len(v) == 0:
-            return None
-        return v
 
     # GENERAL SETTINGS
 
@@ -47,19 +48,19 @@ class Settings(BaseSettings):
     POSTGRES_SERVER: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
-    SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
+    POSTGRES_PORT: int = 5432
+    POSTGRES_DB: str = ""
 
-    @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
-        if isinstance(v, str):
-            return v
-        return PostgresDsn.build(
-            scheme="postgresql",
-            user=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_SERVER"),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
+    @computed_field  # type: ignore[misc]
+    @property
+    def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
+        return MultiHostUrl.build(
+            scheme="postgresql+psycopg",
+            username=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.POSTGRES_SERVER,
+            port=self.POSTGRES_PORT,
+            path=self.POSTGRES_DB,
         )
 
     SMTP_TLS: bool = True
@@ -71,22 +72,22 @@ class Settings(BaseSettings):
     EMAILS_FROM_NAME: Optional[str] = None
     EMAILS_TO_EMAIL: Optional[EmailStr] = None
 
-    @validator("EMAILS_FROM_NAME")
-    def get_project_name(cls, v: Optional[str], values: Dict[str, Any]) -> str:
-        if not v:
-            return values["PROJECT_NAME"]
-        return v
+    @model_validator(mode="after")
+    def _set_default_emails_from(self) -> Self:
+        if not self.EMAILS_FROM_NAME:
+            self.EMAILS_FROM_NAME = self.PROJECT_NAME
+        return self
 
     EMAIL_RESET_TOKEN_EXPIRE_HOURS: int = 48
     EMAIL_TEMPLATES_DIR: str = "/app/app/email-templates/build"
-    EMAILS_ENABLED: bool = False
 
-    @validator("EMAILS_ENABLED", pre=True)
-    def get_emails_enabled(cls, v: bool, values: Dict[str, Any]) -> bool:
+    @computed_field  # type: ignore[misc]
+    @property
+    def emails_enabled(self) -> bool:
         return bool(
-            values.get("SMTP_HOST")
-            and values.get("SMTP_PORT")
-            and values.get("EMAILS_FROM_EMAIL")
+            self.SMTP_HOST
+            and self.SMTP_PORT
+            and self.EMAILS_FROM_EMAIL
         )
 
     EMAIL_TEST_USER: EmailStr = "test@example.com"  # type: ignore
@@ -107,9 +108,10 @@ class Settings(BaseSettings):
     NEO4J_SUGGESTION_LIMIT: int = 8
     NEO4J_RESULTS_LIMIT: int = 100
 
-    @validator("NEO4J_BOLT_URL", pre=True)
-    def get_neo4j_bolt_url(cls, v: str, values: Dict[str, Any]) -> str:
-        return f"{values.get('NEO4J_BOLT')}://{values.get('NEO4J_USERNAME')}:{values.get('NEO4J_PASSWORD')}@{values.get('NEO4J_SERVER')}:7687"
+    @model_validator(mode="after")
+    def _set_neo4j_bolt_url(self) -> Self:
+        self.NEO4J_BOLT_URL = f"{self.NEO4J_BOLT}://{self.NEO4J_USERNAME}:{self.NEO4J_PASSWORD}@{self.NEO4J_SERVER}:7687"
+        return self
 
 
 settings = Settings()

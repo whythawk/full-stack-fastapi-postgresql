@@ -32,16 +32,16 @@
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from "@headlessui/vue"
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid"
 import { GlobeEuropeAfricaIcon } from "@heroicons/vue/24/outline"
-import { LocaleObject } from "@nuxtjs/i18n/dist/runtime/composables"
+// import { type LocaleObject } from "@nuxtjs/i18n/dist/types"
 
 const { locale, locales } = useI18n()
-const supportedLocales = locales.value as Array<LocaleObject>
+const supportedLocales = locales.value as Array<any>
 const switchLocalePath = useSwitchLocalePath()
-const currentLocale = ref({} as LocaleObject)
+const currentLocale = ref({} as any)
 
 // When the visitor selects a new locale, route to
 // to the new locale's path e.g. /en-CA/foo → /ar-EG/foo
-async function onLocaleChanged(term: LocaleObject) {
+async function onLocaleChanged(term: any) {
   currentLocale.value = term
   // switchLocalePath('ar-EG') will return Arabic equivalent
   // for the *current* URL path e.g. if we're at /en-CA/about,
@@ -50,7 +50,7 @@ async function onLocaleChanged(term: LocaleObject) {
 }
 
 function setLocale(term: string) {
-  currentLocale.value = supportedLocales.find((l) => l.iso === term || l.code === term ) as LocaleObject
+  currentLocale.value = supportedLocales.find((l) => l.iso === term || l.code === term ) as any
 }
 
 onMounted(async () => {

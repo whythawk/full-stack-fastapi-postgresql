@@ -1,5 +1,6 @@
 import inspect
-from neomodel import StructuredNode, ClientError, install_labels, db
+from neomodel import StructuredNode, install_labels, db
+from neo4j.exceptions import ClientError
 
 # from neomodel import config
 # from app.core.config import settings
@@ -25,7 +26,7 @@ def createNodeIndices():
         # ("indexname1", "Node", "field_name1", "simple"),
         # ("indexname2", "Node", "field_name2" , "standard"),
     ]
-    for (index, node, key, analyzer) in indices:
+    for index, node, key, analyzer in indices:
         try:
             q = f"CALL db.index.fulltext.createNodeIndex('{index}',['{node}'],['{key}'], {{analyzer: '{analyzer}'}})"
             db.cypher_query(q)
@@ -58,4 +59,3 @@ def init_gdb() -> None:
             if not str(e.message).lower().startswith("an equivalent constraint already exists"):
                 raise e
     # createNodeIndices()
-

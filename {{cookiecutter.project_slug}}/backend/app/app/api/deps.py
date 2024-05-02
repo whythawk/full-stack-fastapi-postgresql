@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -33,7 +33,9 @@ def get_token_payload(token: str) -> schemas.TokenPayload:
     return token_data
 
 
-def get_current_user(db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)) -> models.User:
+def get_current_user(
+    db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(reusable_oauth2)]
+) -> models.User:
     token_data = get_token_payload(token)
     if token_data.refresh or token_data.totp:
         # Refresh token is not a valid access token and TOTP True can only be used to validate TOTP
@@ -47,7 +49,9 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(reusabl
     return user
 
 
-def get_totp_user(db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)) -> models.User:
+def get_totp_user(
+    db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(reusable_oauth2)]
+) -> models.User:
     token_data = get_token_payload(token)
     if token_data.refresh or not token_data.totp:
         # Refresh token is not a valid access token and TOTP False cannot be used to validate TOTP
@@ -61,7 +65,7 @@ def get_totp_user(db: Session = Depends(get_db), token: str = Depends(reusable_o
     return user
 
 
-def get_magic_token(token: str = Depends(reusable_oauth2)) -> schemas.MagicTokenPayload:
+def get_magic_token(token: Annotated[str, Depends(reusable_oauth2)]) -> schemas.MagicTokenPayload:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.JWT_ALGO])
         token_data = schemas.MagicTokenPayload(**payload)
@@ -73,7 +77,9 @@ def get_magic_token(token: str = Depends(reusable_oauth2)) -> schemas.MagicToken
     return token_data
 
 
-def get_refresh_user(db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)) -> models.User:
+def get_refresh_user(
+    db: Annotated[Session, Depends(get_db)], token: Annotated[str, Depends(reusable_oauth2)]
+) -> models.User:
     token_data = get_token_payload(token)
     if not token_data.refresh:
         # Access token is not a valid refresh token
@@ -98,7 +104,7 @@ def get_refresh_user(db: Session = Depends(get_db), token: str = Depends(reusabl
 
 
 def get_current_active_user(
-    current_user: models.User = Depends(get_current_user),
+    current_user: Annotated[models.User, Depends(get_current_user)],
 ) -> models.User:
     if not crud.user.is_active(current_user):
         raise HTTPException(status_code=400, detail="Inactive user")
@@ -106,7 +112,7 @@ def get_current_active_user(
 
 
 def get_current_active_superuser(
-    current_user: models.User = Depends(get_current_user),
+    current_user: Annotated[models.User, Depends(get_current_user)],
 ) -> models.User:
     if not crud.user.is_superuser(current_user):
         raise HTTPException(status_code=400, detail="The user doesn't have enough privileges")

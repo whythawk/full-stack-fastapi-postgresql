@@ -7,7 +7,7 @@
             <div class="mt-10">
               <div>
                 <div class="inline-flex space-x-4">
-                  <LocaleLink to="/about" class="rounded bg-rose-50 px-2.5 py-1 text-sm font-semibold text-rose-500">Key features</LocaleLink>
+                  <NuxtLinkLocale to="/about" class="rounded bg-rose-50 px-2.5 py-1 text-sm font-semibold text-rose-500">Key features</NuxtLinkLocale>
                   <a :href="github.href" class="inline-flex space-x-4">
                     <span class="inline-flex items-center space-x-1 text-sm font-medium text-rose-500">
                       <span class="inline-flex items-center space-x-1 text-sm font-medium text-rose-400">
@@ -21,7 +21,7 @@
               </div>
               <div class="mt-6 sm:max-w-xl">
                 <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">FastAPI/Nuxt starter stack</h1>
-                <p class="mt-6 text-xl text-gray-500">Accelerate your next web development project with this FastAPI 0.88 / Nuxt.js 3.0 base project generator.</p>
+                <p class="mt-6 text-xl text-gray-500">Accelerate your next web development project with this FastAPI 0.109 / Nuxt.js 3.11 base project generator.</p>
               </div>
               <div class="mt-6 sm:max-w-xl">
                 <ul class="list-disc ml-6 text-gray-600">
@@ -33,7 +33,10 @@
                     <span class="font-bold">Authorisation</span> via middleware for page access, including logged in or superuser.
                   </li>
                   <li>
-                    <span class="font-bold">Databases</span> for Neo4j and PostgreSQL included, plus PGAdmin for PostgreSQL management, using SQLAlchemy 1.4.
+                    <span class="font-bold">Schemas</span> with Pydantic 2.0 and TypeScript interfaces.
+                  </li>
+                  <li>
+                    <span class="font-bold">Databases</span> for Neo4j and PostgreSQL included, plus PGAdmin for PostgreSQL management, using SQLAlchemy 2.0.
                   </li>
                   <li>
                     <span class="font-bold">Form validation</span> with Vee-Validate 4.
@@ -46,6 +49,9 @@
                   </li>
                   <li>
                     <span class="font-bold">Content management</span> with Nuxt Content for writing Markdown pages.
+                  </li>
+                  <li>
+                    <span class="font-bold">Internationalisation</span> with Nuxt i18n.
                   </li>
                 </ul>
               </div>

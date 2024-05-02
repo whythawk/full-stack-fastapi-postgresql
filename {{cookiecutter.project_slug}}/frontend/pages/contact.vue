@@ -89,12 +89,11 @@
 
 <script setup lang="ts">
 import { BuildingOffice2Icon, EnvelopeIcon, PhoneIcon } from "@heroicons/vue/24/outline"
-import { ISendEmail } from "@/interfaces"
-import { useToastStore, useAuthStore } from "@/stores"
+import type { ISendEmail } from "@/interfaces"
+import { useToastStore } from "@/stores"
 import { apiService } from "@/api"
 
 const toasts = useToastStore()
-const auth = useAuthStore()
 
 const schema = {
   email: { email: true, required: true },

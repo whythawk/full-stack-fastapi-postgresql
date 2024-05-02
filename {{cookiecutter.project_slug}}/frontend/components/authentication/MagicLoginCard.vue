@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!auth.loggedIn" class="py-12 sm:py-20">
+  <div v-if="!authStore.loggedIn" class="py-12 sm:py-20">
     <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
       <div
         class="relative isolate flex flex-col gap-10 overflow-hidden bg-gray-900 px-6 py-16 shadow-2xl sm:rounded-xl sm:px-24 xl:flex-row xl:items-center xl:py-20">
@@ -44,7 +44,7 @@ const props = defineProps({
   cardText: String
 })
 
-const auth = useAuthStore()
+const authStore = useAuthStore()
 const redirectAfterMagic = "/magic"
 const redirectTOTP = "/totp"
 
@@ -54,11 +54,11 @@ const schema = {
 }
 
 async function submit(values: any) {
-  await auth.logIn({ username: values.email, password: values.password })
-  if (auth.authTokens.token && tokenIsTOTP(auth.authTokens.token))
+  await authStore.logIn({ username: values.email, password: values.password })
+  if (authStore.tokenStore.token && tokenIsTOTP(authStore.tokenStore.token))
     return await navigateTo(redirectTOTP)
-  if (auth.authTokens.token &&
-    tokenParser(auth.authTokens.token).hasOwnProperty("fingerprint"))
+  if (authStore.tokenStore.token &&
+    tokenParser(authStore.tokenStore.token).hasOwnProperty("fingerprint"))
     return await navigateTo(redirectAfterMagic)
 }
 </script>

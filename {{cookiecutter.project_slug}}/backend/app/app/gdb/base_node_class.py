@@ -57,7 +57,7 @@ class NodeBase(StructuredNode):
             if not relation_type:
                 raise ValueError("No relation_type is specified on provided relationship")
 
-            from neomodel.match import _rel_helper
+            from neomodel.sync_.match import _rel_helper
 
             query_params["source_id"] = relationship.source.id
             query = "MATCH (source:{0}) WHERE ID(source) = $source_id\n ".format(relationship.source.__label__)
@@ -90,11 +90,16 @@ class MetadataBase(NodeBase):
     # https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-3
     identifier = UniqueIdProperty()
     title = StringProperty(help_text="A human-readable title given to the resource.")
-    description = StringProperty(help_text="A short description of the resource.",)
+    description = StringProperty(
+        help_text="A short description of the resource.",
+    )
     # Node-specific labels
     created = DateTimeProperty(default=lambda: datetime.now(pytz.utc))
-    isActive = BooleanProperty(default=True, help_text="Is the resource currently updated or maintained.",)
-    isPrivate = BooleanProperty(
-        default=True, help_text="Is the resource private to team members with appropriate authorisation.",
+    isActive = BooleanProperty(
+        default=True,
+        help_text="Is the resource currently updated or maintained.",
     )
-
+    isPrivate = BooleanProperty(
+        default=True,
+        help_text="Is the resource private to team members with appropriate authorisation.",
+    )

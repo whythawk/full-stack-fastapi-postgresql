@@ -4,7 +4,6 @@ from datetime import datetime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import DateTime
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
 
@@ -18,9 +17,9 @@ class User(Base):
     id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid4)
     created: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     modified: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), 
-        server_default=func.now(), 
-        server_onupdate=func.now(), 
+        DateTime(timezone=True),
+        server_default=func.now(),
+        server_onupdate=func.now(),
         nullable=False,
     )
     # METADATA

@@ -1,6 +1,7 @@
 from typing import Optional
 from uuid import UUID
-from pydantic import BaseModel, Field, EmailStr, constr, validator
+from pydantic import field_validator, StringConstraints, ConfigDict, BaseModel, Field, EmailStr
+from typing_extensions import Annotated
 
 
 class UserLogin(BaseModel):
@@ -20,37 +21,35 @@ class UserBase(BaseModel):
 # Properties to receive via API on creation
 class UserCreate(UserBase):
     email: EmailStr
-    password: Optional[constr(min_length=8, max_length=64)] = None
+    password: Optional[Annotated[str, StringConstraints(min_length=8, max_length=64)]] = None
 
 
 # Properties to receive via API on update
 class UserUpdate(UserBase):
-    original: Optional[constr(min_length=8, max_length=64)] = None
-    password: Optional[constr(min_length=8, max_length=64)] = None
+    original: Optional[Annotated[str, StringConstraints(min_length=8, max_length=64)]] = None
+    password: Optional[Annotated[str, StringConstraints(min_length=8, max_length=64)]] = None
 
 
 class UserInDBBase(UserBase):
     id: Optional[UUID] = None
-
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Additional properties to return via API
 class User(UserInDBBase):
     hashed_password: bool = Field(default=False, alias="password")
     totp_secret: bool = Field(default=False, alias="totp")
+    model_config = ConfigDict(populate_by_name=True)
 
-    class Config:
-        allow_population_by_field_name = True
-
-    @validator("hashed_password", pre=True)
+    @field_validator("hashed_password", mode="before")
+    @classmethod
     def evaluate_hashed_password(cls, hashed_password):
         if hashed_password:
             return True
         return False
 
-    @validator("totp_secret", pre=True)
+    @field_validator("totp_secret", mode="before")
+    @classmethod
     def evaluate_totp_secret(cls, totp_secret):
         if totp_secret:
             return True

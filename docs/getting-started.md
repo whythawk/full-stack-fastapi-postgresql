@@ -25,14 +25,15 @@ It consists of the following key components:
 
 - **Docker Compose** integration and optimization for local development.
 - **Authentication** user management schemas, models, crud and apis already built, with OAuth2 JWT token support & default hashing. Offers _magic link_ authentication, with password fallback, with cookie management, including `access` and `refresh` tokens.
-- [**FastAPI**](https://github.com/tiangolo/fastapi) backend with [Inboard](https://inboard.bws.bio/) one-repo Docker images:
+- [**FastAPI**](https://github.com/tiangolo/fastapi) backend with [Inboard](https://inboard.bws.bio/) one-repo Docker images, using Python 3.11:
   - **SQLAlchemy** version 2.0 support for models.
-  - **MJML** templates for common email transactions.
+  - **Pydantic** version 2.7 for schemas.
   - **Metadata Schema** based on [Dublin Core](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#section-3) for inheritance.
   - **Common CRUD** support via generic inheritance.
   - **Standards-based**: Based on (and fully compatible with) the open standards for APIs: [OpenAPI](https://github.com/OAI/OpenAPI-Specification) and [JSON Schema](http://json-schema.org/).
+  - **MJML** templates for common email transactions.
   - [**Many other features**]("https://fastapi.tiangolo.com/features/"): including automatic validation, serialization, interactive documentation, etc.
-- [**Nuxt/Vue 3**](https://nuxt.com/) frontend:
+- [**Nuxt/Vue 3**](https://nuxt.com/) frontend using TypeScript:
   - **Authorisation** via middleware for page access, including logged in or superuser.
   - **Model blog** project, with [Nuxt Content](https://content.nuxtjs.org/) for writing Markdown pages.
   - **Form validation** with [Vee-Validate 4](https://vee-validate.logaretm.com/v4/).
@@ -45,7 +46,6 @@ It consists of the following key components:
 - **Neo4j** graph database, including integration into the FastAPI base project.
 - Load balancing between frontend and backend with **Traefik**, so you can have both under the same domain, separated by path, but served by different containers.
 - Traefik integration, including Let's Encrypt **HTTPS** certificates automatic generation.
-- GitLab **CI** (continuous integration), including frontend and backend testing.
 
 ## Who is it for?
 
@@ -104,6 +104,18 @@ After using this generator, your new project will contain an extensive `README.m
 ## Release Notes
 
 See notes and [releases](https://github.com/whythawk/full-stack-fastapi-postgresql/releases). The last four release notes are listed here:
+
+## 0.9.0
+
+Updates to `backend`:
+- FastAPI 0.99 -> 0.109 (Inboard 0.51 -> 0.68)
+- Pydantic 1.10 -> 2.7.1
+
+Updates to `frontend`:
+- NuxtJS 3.6.5 -> 3.11.2
+- Nuxtjs i18n 8.0.0 RC -> 8.3.1
+
+The Pydantic change is dramatic, so please revise their [migration guide](https://docs.pydantic.dev/2.7/migration/). Similarly, [nuxt/i18n](https://i18n.nuxtjs.org/docs/getting-started) has some major quality of life improvements.
 
 ## 0.8.2
 

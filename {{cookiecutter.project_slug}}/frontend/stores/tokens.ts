@@ -1,4 +1,4 @@
-import { ITokenResponse, IWebToken } from "@/interfaces"
+import type {  ITokenResponse,  IWebToken } from "@/interfaces"
 import { apiAuth } from "@/api"
 import { tokenExpired, tokenParser } from "@/utilities"
 import { useToastStore } from "./toasts"

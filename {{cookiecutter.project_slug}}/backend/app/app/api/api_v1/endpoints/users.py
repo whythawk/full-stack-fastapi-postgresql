@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Annotated, Any, List
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -19,7 +19,7 @@ router = APIRouter()
 @router.post("/", response_model=schemas.User)
 def create_user_profile(
     *,
-    db: Session = Depends(deps.get_db),
+    db: Annotated[Session, Depends(deps.get_db)],
     password: str = Body(...),
     email: EmailStr = Body(...),
     full_name: str = Body(None),
@@ -42,9 +42,9 @@ def create_user_profile(
 @router.put("/", response_model=schemas.User)
 def update_user(
     *,
-    db: Session = Depends(deps.get_db),
+    db: Annotated[Session, Depends(deps.get_db)],
     obj_in: schemas.UserUpdate,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: Annotated[models.User, Depends(deps.get_current_active_user)],
 ) -> Any:
     """
     Update user.
@@ -74,7 +74,7 @@ def update_user(
 @router.get("/", response_model=schemas.User)
 def read_user(
     *,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: Annotated[models.User, Depends(deps.get_current_active_user)],
 ) -> Any:
     """
     Get current user.
@@ -85,9 +85,9 @@ def read_user(
 @router.get("/all", response_model=List[schemas.User])
 def read_all_users(
     *,
-    db: Session = Depends(deps.get_db),
+    db: Annotated[Session, Depends(deps.get_db)],
     page: int = 0,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: Annotated[models.User, Depends(deps.get_current_active_superuser)],
 ) -> Any:
     """
     Retrieve all current users.
@@ -98,7 +98,7 @@ def read_all_users(
 @router.post("/new-totp", response_model=schemas.NewTOTP)
 def request_new_totp(
     *,
-    current_user: models.User = Depends(deps.get_current_active_user),
+    current_user: Annotated[models.User, Depends(deps.get_current_active_user)],
 ) -> Any:
     """
     Request new keys to enable TOTP on the user account.
@@ -112,9 +112,9 @@ def request_new_totp(
 @router.post("/toggle-state", response_model=schemas.Msg)
 def toggle_state(
     *,
-    db: Session = Depends(deps.get_db),
+    db: Annotated[Session, Depends(deps.get_db)],
     user_in: schemas.UserUpdate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: Annotated[models.User, Depends(deps.get_current_active_superuser)],
 ) -> Any:
     """
     Toggle user state (moderator function)
@@ -131,9 +131,9 @@ def toggle_state(
 @router.post("/create", response_model=schemas.User)
 def create_user(
     *,
-    db: Session = Depends(deps.get_db),
+    db: Annotated[Session, Depends(deps.get_db)],
     user_in: schemas.UserCreate,
-    current_user: models.User = Depends(deps.get_current_active_superuser),
+    current_user: Annotated[models.User, Depends(deps.get_current_active_superuser)],
 ) -> Any:
     """
     Create new user (moderator function).
@@ -145,7 +145,7 @@ def create_user(
             detail="The user with this username already exists in the system.",
         )
     user = crud.user.create(db, obj_in=user_in)
-    if settings.EMAILS_ENABLED and user_in.email:
+    if settings.emails_enabled and user_in.email:
         send_new_account_email(email_to=user_in.email, username=user_in.email, password=user_in.password)
     return user
 

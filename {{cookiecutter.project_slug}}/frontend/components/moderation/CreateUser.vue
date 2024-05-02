@@ -42,7 +42,7 @@
 import { apiAuth } from "@/api"
 import { useTokenStore, useToastStore } from "@/stores"
 import { generateUUID } from "@/utilities"
-import { IUserProfileCreate } from "@/interfaces"
+import type { IUserProfileCreate } from "@/interfaces"
 
 const schema = {
     full_name: { required: false },

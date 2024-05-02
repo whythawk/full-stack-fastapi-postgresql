@@ -146,7 +146,7 @@ import { QrCodeIcon } from "@heroicons/vue/24/outline"
 import QrcodeVue from "qrcode.vue"
 import { useAuthStore, useTokenStore } from "@/stores"
 import { apiAuth } from "@/api"
-import { IUserProfileUpdate, INewTOTP, IEnableTOTP } from "@/interfaces"
+import type { IUserProfileUpdate, INewTOTP, IEnableTOTP } from "@/interfaces"
 
 
 const authStore = useAuthStore()

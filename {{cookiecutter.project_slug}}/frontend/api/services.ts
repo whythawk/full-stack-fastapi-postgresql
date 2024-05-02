@@ -1,4 +1,4 @@
-import { ISendEmail, IMsg } from "@/interfaces"
+import type { ISendEmail, IMsg } from "@/interfaces"
 import { apiCore } from "./core"
 
 export const apiService = {

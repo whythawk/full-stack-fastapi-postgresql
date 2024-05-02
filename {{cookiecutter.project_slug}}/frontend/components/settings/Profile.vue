@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from "@/stores"
-import { IUserProfileUpdate } from "@/interfaces"
+import type { IUserProfileUpdate } from "@/interfaces"
 
 const authStore = useAuthStore()
 let profile = {} as IUserProfileUpdate
